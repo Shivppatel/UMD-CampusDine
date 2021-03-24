@@ -42,24 +42,25 @@
 #### Request
 
 `GET /api/dining`
-
+  
     curl http://localhost:3000/api/dining
 
 #### Response
     [{
-            "hall_id":1,
-            "hall_name":"North Campus Dining Hall",
-            "hall_location":"North Campus"
-        },
-        {
-            "hall_id":2,
-            "hall_name":"South Campus Dining Hall",
-            "hall_location":"South Campus"
-        },
-        {
-            "hall_id":3,
-            "hall_name":"251 North Dining Hall",
-            "hall_location":"North Campus"
+        "hall_id": 1,
+        "hall_name": "North Campus Diner",
+        "hall_address": "4121 Farm Dr, College Park, MD 20742",
+        "hall_lat": "38.9923223",
+        "hall_long": "-76.9466945"
+    },
+    {
+        "hall_id": 2,
+        "hall_name": "South Campus Dining Hall",
+        "hall_address": "7093 Preinkert Dr, College Park, MD 20740",
+        "hall_lat": "38.9832579",
+        "hall_long": "-76.9437231"
+    },
+        ...
     }]
 ## Get a Specific Dining Hall
 
@@ -74,7 +75,9 @@
     [{
         "hall_id":1,
         "hall_name":"North Campus Dining Hall",
-        "hall_location":"North Campus"
+        "hall_address": "4121 Farm Dr, College Park, MD 20742",
+        "hall_lat": "38.9923223",
+        "hall_long": "-76.9466945"
     }]
     
 
@@ -85,14 +88,14 @@
 
 `POST /api/dining`
 
-    curl -d "hall_id=4&hall_name=Example&hall_location=Hornbake" -X POST http://localhost:3000/api/dining
-
+    curl -d "hall_name=Example1&hall_address=Stamp&hall_lat=38.9923&hall_long=-76.9466" -X POST http://localhost:3000/api/dining
 #### Response
 
     {
-        "hall_id":"4",
         "hall_name":"Example",
-        "hall_location":"Hornbake"
+        "hall_address": "4121 Farm Dr, College Park, MD 20742",
+        "hall_lat": "38.9923223",
+        "hall_long": "-76.9466945"
     }
 
 ## Updating an Existing Dining Hall
@@ -101,7 +104,7 @@
 
 `PUT /api/dining`
 
-    curl -d "hall_id=4&hall_name=Example1&hall_location=Stamp" -X PUT http://localhost:3000/api/dining
+    curl -d "hall_id=4&hall_name=Example1&hall_address=Stamp&hall_lat=38.9923&hall_long=-76.9466" -X PUT http://localhost:3000/api/dining
 
 #### Response
 
@@ -129,7 +132,6 @@
 `GET /api/meals`
 
     curl http://localhost:3000/api/meals
-
 #### Response
     [{
         "meal_id":1,
@@ -250,25 +252,39 @@
 
 # Custom Client SQL
 
+## Custom SQL Query
 #### Request
 
 `GET /api/custom`
 
     curl --location --request GET 'http://localhost:3000/api/custom' \
     --header 'Content-Type: application/x-www-form-urlencoded' \
-    --data-urlencode 'query=SELECT 
-    `DiningHall_Tracker`.`Meals`.`meal_name` AS `meal_name`,
-        `DiningHall_Tracker`.`Macros`.`calories` AS `calories`,
-        `DiningHall_Tracker`.`Macros`.`carbs` AS `carbs`,
-        `DiningHall_Tracker`.`Macros`.`sodium` AS `sodium`,
-        `DiningHall_Tracker`.`Macros`.`protein` AS `protein`,
-        `DiningHall_Tracker`.`Macros`.`fat` AS `fat`,
-        `DiningHall_Tracker`.`Macros`.`cholesterol` AS `cholesterol`
-    FROM
-        (`DiningHall_Tracker`.`Meals`
-        JOIN `DiningHall_Tracker`.`Macros`)
-    WHERE
-        (`DiningHall_Tracker`.`Meals`.`meal_id` = `DiningHall_Tracker`.`Macros`.`meal_id`)'   
+    --data-urlencode 'query=SELECT * FROM Meals'
+
+#### Response
+     [{
+        "meal_id":1,
+        "meal_name":"Scrambled Eggs",
+        "meal_category":"B"
+    },
+    {
+        "meal_id":2,
+        "meal_name":"French Toast",
+        "meal_category":"B"
+    },
+    {
+        "meal_id":3,
+        "meal_name":"Pancakes",
+        "meal_category":"B"
+    },
+        ...
+    ]
+## Get Meal Macro Information
+#### Request
+
+`GET /api/custom`
+
+    curl --location --request GET 'http://localhost:3000/api/table/data'  
 
 #### Response
     [{
@@ -297,6 +313,38 @@
         "protein": 4,
         "fat": 15,
         "cholesterol": 30
+    },
+        ...
+    ]
+
+## Get Meal Location Information
+#### Request
+
+`GET /api/custom`
+
+    curl --location --request GET 'http://localhost:3000/api/map/data'  
+
+#### Response
+    [{
+        "hall_name": "North Campus Diner",
+        "hall_address": "4121 Farm Dr, College Park, MD 20742",
+        "hall_lat": "38.9923223",
+        "hall_long": "-76.9466945",
+        "meal_name": "Scrambled Eggs"
+    },
+    {
+        "hall_name": "North Campus Diner",
+        "hall_address": "4121 Farm Dr, College Park, MD 20742",
+        "hall_lat": "38.9923223",
+        "hall_long": "-76.9466945",
+        "meal_name": "Pancakes"
+    },
+    {
+       "hall_name": "North Campus Diner",
+        "hall_address": "4121 Farm Dr, College Park, MD 20742",
+        "hall_lat": "38.9923223",
+        "hall_long": "-76.9466945",
+        "meal_name": "Pork Sausage Link"
     },
         ...
     ]
