@@ -1,3 +1,52 @@
+function createNotification(name, protein, fat, carbs, cholesterol, sodium) {
+  // Checks to see if a macro pop-up is already showing if so remove it
+  if (document.querySelector('#macro-popup')) {
+    document.querySelector('#macro-popup').remove();
+  }
+
+  const notification = document.createElement('div');
+  notification.classList.add('container', 'box', 'notification', 'is-link');
+  notification.id = 'macro-popup'; // Adding Id to reference later in css for syling
+  notification.innerHTML = `
+  <button class="delete"></button>
+  <p class="title is-size-4 has-text-centered">${name}</p>
+  <div id="chartContainer" style="height: 300px; width: 100%"></div>`;
+
+  document.body.append(notification); // Adds pop-up to the page
+
+  const chart = new CanvasJS.Chart('chartContainer', {
+    animationEnabled: true,
+    legend: {
+      cursor: 'pointer'
+    },
+    data: [
+      {
+        type: 'doughnut',
+        startAngle: 60,
+        showInLegend: true,
+        indexLabelFontSize: 17,
+        indexLabel: '{name} - {y}g',
+        toolTipContent: '<b>{name}:</b> {y}g (#percent)%',
+        dataPoints: [
+          { y: fat, name: 'Fat' },
+          { y: protein, name: 'Portein' },
+          { y: sodium / 1000, name: 'Sodium' }, // Converts mg to g
+          { y: carbs, name: 'Carbs' },
+          { y: cholesterol / 1000, name: 'Cholesterol' } // Converts mg to g
+        ]
+      }
+    ]
+  });
+
+  // listens for the delete button on the pop-up to be clicked
+  document.querySelector('.delete').addEventListener('click', () => {
+    chart.destroy(); // Destroys the chart object
+    notification.parentNode.removeChild(notification); // removes pop-up form the page
+  });
+
+  chart.render(); // Renders the chart object to the screen
+}
+
 async function populateMacros() {
   const targetList = document.querySelector('tbody');
   const customRequest = await fetch('/api/table/data');
@@ -13,6 +62,16 @@ async function populateMacros() {
     <td>${meal.protein}g</td>
     <td>${meal.fat}g</td>
     <td>${meal.cholesterol}mg</td>`;
+    appendItem.addEventListener('click', () => {
+      createNotification(
+        meal.meal_name,
+        meal.protein,
+        meal.fat,
+        meal.carbs,
+        meal.cholesterol,
+        meal.sodium
+      );
+    });
     targetList.append(appendItem);
   });
 }
@@ -39,7 +98,7 @@ async function populateRestaurants() {
     targetBox.append(appendItem);
   });
 }
-/* eslint-disable max-len */
+
 function mapScript() {
   const mymap = L.map('mapid').setView([38.988751, -76.94774], 14);
 
@@ -117,7 +176,6 @@ async function dataFilter(mapFromMapFunction) {
     }
   });
 }
-
 async function windowActions() {
   populateMacros();
   populateRestaurants();
@@ -126,3 +184,12 @@ async function windowActions() {
 }
 
 window.onload = windowActions;
+(document.querySelectorAll('.notification .delete') || []).forEach(
+  ($delete) => {
+    const $notification = $delete.parentNode;
+
+    $delete.addEventListener('click', () => {
+      $notification.parentNode.removeChild($notification);
+    });
+  }
+);
