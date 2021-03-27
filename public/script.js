@@ -29,7 +29,7 @@ function createNotification(name, protein, fat, carbs, cholesterol, sodium) {
         toolTipContent: '<b>{name}:</b> {y}g (#percent)%',
         dataPoints: [
           { y: fat, name: 'Fat' },
-          { y: protein, name: 'Portein' },
+          { y: protein, name: 'Protein' },
           { y: sodium / 1000, name: 'Sodium' }, // Converts mg to g
           { y: carbs, name: 'Carbs' },
           { y: cholesterol / 1000, name: 'Cholesterol' } // Converts mg to g
