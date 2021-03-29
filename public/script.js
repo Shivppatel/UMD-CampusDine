@@ -1,18 +1,28 @@
 function createNotification(name, protein, fat, carbs, cholesterol, sodium) {
-  // Checks to see if a macro pop-up is already showing if so remove it
+  // Checks to see if a macro modal is already showing if so remove it
   if (document.querySelector('#macro-popup')) {
     document.querySelector('#macro-popup').remove();
   }
 
-  const notification = document.createElement('div');
-  notification.classList.add('container', 'box', 'notification', 'is-link');
-  notification.id = 'macro-popup'; // Adding Id to reference later in css for syling
-  notification.innerHTML = `
-  <button class="delete"></button>
-  <p class="title is-size-4 has-text-centered">${name}</p>
-  <div id="chartContainer" style="height: 300px; width: 100%"></div>`;
+  // Creates new div element for the modal
+  const modal = document.createElement('div');
 
-  document.body.append(notification); // Adds pop-up to the page
+  // Adds classes needed for bulma styling and to have it activc
+  modal.classList.add('modal', 'is-active', 'is-clipped');
+  modal.id = 'macro-popup'; // Adding Id to reference later in css for syling
+  modal.innerHTML = `
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">${name}</p>
+      <button class="delete" aria-label="close"></button>
+    </header>
+    <section class="modal-card-body">
+      <div id="chartContainer" style="height: 300px; width: 100%"></div>
+    </section>
+  </div>`;
+
+  document.body.append(modal); // Adds modal to the page
 
   const chart = new CanvasJS.Chart('chartContainer', {
     animationEnabled: true,
@@ -38,10 +48,10 @@ function createNotification(name, protein, fat, carbs, cholesterol, sodium) {
     ]
   });
 
-  // listens for the delete button on the pop-up to be clicked
+  // listens for the delete button on the modal to be clicked
   document.querySelector('.delete').addEventListener('click', () => {
     chart.destroy(); // Destroys the chart object
-    notification.parentNode.removeChild(notification); // removes pop-up form the page
+    modal.parentNode.removeChild(modal); // removes modal form the page
   });
 
   chart.render(); // Renders the chart object to the screen
@@ -169,7 +179,7 @@ async function dataFilter(mapFromMapFunction) {
   });
 
   // this listens for typing into our input box
-  search.addEventListener('input', (event) => {
+  search.addEventListener('input', () => {
     if (search.value.length === 0) {
       // clear your "no matches found" code
       targetList.innerText = '';
